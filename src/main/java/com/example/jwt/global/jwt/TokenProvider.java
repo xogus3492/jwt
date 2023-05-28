@@ -28,18 +28,18 @@ public class TokenProvider implements InitializingBean {
     private final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
     private static final String AUTHORITIES_KEY = "auth";
     private final long tokenValidityInMilliseconds;
-    private final long refreshTokenValidityInMillisecond;
+    //private final long refreshTokenValidityInMillisecond;
     private final String secret;
     private Key key;
 
     public TokenProvider(
             @Value("${jwt.secret}") String secret,
-            @Value("${jwt.accessToken-validity-in-seconds}") long tokenValidityInSeconds,
-            @Value("${jwt.refreshToken-validity-in-seconds}") long refreshTokenValidityInMillisecond
+            @Value("${jwt.accessToken-validity-in-seconds}") long tokenValidityInSeconds
+            //@Value("${jwt.refreshToken-validity-in-seconds}") long refreshTokenValidityInMillisecond
     ) {
         this.secret = secret;
         this.tokenValidityInMilliseconds = tokenValidityInSeconds * 1000;
-        this.refreshTokenValidityInMillisecond = refreshTokenValidityInMillisecond * 1000;
+        //this.refreshTokenValidityInMillisecond = refreshTokenValidityInMillisecond * 1000;
     }
 
     @Override
