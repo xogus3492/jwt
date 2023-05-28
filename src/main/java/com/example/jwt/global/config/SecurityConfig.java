@@ -22,7 +22,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final String[] AUTH_WHITELIST = {
             "/auth/signup",
             "/auth/signin"
-    }; // 권한이 필요 없는 경로들
+    };
 
     @Bean
     public PasswordEncoder passwordEncoder() {
