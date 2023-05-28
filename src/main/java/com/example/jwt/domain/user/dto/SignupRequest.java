@@ -6,7 +6,6 @@ import lombok.Getter;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @Getter
 public class SignupRequest {
@@ -21,15 +20,12 @@ public class SignupRequest {
     @NotBlank
     private String name;
 
-    @NotNull
-    private RoleType roleType;
-
     public User toEntity(String pw) {
         return User.builder()
                 .email(email)
                 .password(pw)
                 .name(name)
-                .roleType(roleType)
+                .roleType(RoleType.USER)
                 .build();
     }
 }
