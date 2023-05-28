@@ -1,6 +1,7 @@
 package com.example.jwt.domain.user.domain;
 
 import com.example.jwt.global.common.BaseTimeEntity;
+import lombok.Builder;
 import lombok.Getter;
 
 import javax.persistence.*;
@@ -25,4 +26,13 @@ public class User extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private RoleType roleType;
+
+    @Builder
+    public User(Long id, String email, String password, String name, RoleType roleType) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.roleType = roleType;
+    }
 }
