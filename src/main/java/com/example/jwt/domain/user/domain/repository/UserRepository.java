@@ -1,4 +1,4 @@
-package com.example.jwt.domain.user.repository;
+package com.example.jwt.domain.user.domain.repository;
 
 import com.example.jwt.domain.user.domain.User;
 import com.example.jwt.global.security.CustomUserDetails;

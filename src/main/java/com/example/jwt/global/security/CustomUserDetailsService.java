@@ -1,7 +1,6 @@
 package com.example.jwt.global.security;
 
-import com.example.jwt.domain.user.domain.User;
-import com.example.jwt.domain.user.repository.UserRepository;
+import com.example.jwt.domain.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

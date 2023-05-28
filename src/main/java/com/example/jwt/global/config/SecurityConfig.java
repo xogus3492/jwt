@@ -20,7 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final TokenProvider tokenProvider;
     private final String[] AUTH_WHITELIST = {
-            "/auth/signup",
+            "/public/signup",
             "/auth/signin"
     };
 
