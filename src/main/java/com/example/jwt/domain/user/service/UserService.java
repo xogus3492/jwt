@@ -27,8 +27,15 @@ public class UserService {
         return new SignupResponse(user.getId());
     }
 
-    public CommonUserResponse getMyUserInfo(Long id) {
+    public CommonUserResponse readMyUserInfo(Long id) {
         User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User Not Found"));
+
+        return CommonUserResponse.of(user);
+    }
+
+    public CommonUserResponse searchUserInfo(String name) {
+        User user = userRepository.findByName(name)
                 .orElseThrow(() -> new EntityNotFoundException("User Not Found"));
 
         return CommonUserResponse.of(user);

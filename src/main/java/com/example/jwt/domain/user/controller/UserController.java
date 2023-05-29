@@ -33,14 +33,14 @@ public class UserController {
 
     @GetMapping("/user")
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public ResponseEntity<CommonUserResponse> getMyUserInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<CommonUserResponse> readMyUserInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        return ResponseEntity.ok(userService.getMyUserInfo(customUserDetails.getId()));
+        return ResponseEntity.ok(userService.readMyUserInfo(customUserDetails.getId()));
     }
 
-    /*@GetMapping("/user/{username}")
+    @GetMapping("/user/{username}")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<CommonUserResponse> getUserInfo(@PathVariable String username) {
-        return ResponseEntity.ok(userService.getUserWithAuthorities(username));
-    }*/
+    public ResponseEntity<CommonUserResponse> searchUserInfo(@PathVariable String username) {
+        return ResponseEntity.ok(userService.searchUserInfo(username));
+    }
 }
