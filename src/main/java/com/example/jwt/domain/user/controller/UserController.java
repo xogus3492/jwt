@@ -1,16 +1,18 @@
 package com.example.jwt.domain.user.controller;
 
+import com.example.jwt.domain.user.dto.CommonUserResponse;
 import com.example.jwt.domain.user.dto.SignupRequest;
 import com.example.jwt.domain.user.dto.SignupResponse;
 import com.example.jwt.domain.user.service.UserService;
+import com.example.jwt.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
@@ -28,4 +30,17 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+    @GetMapping("/user")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    public ResponseEntity<CommonUserResponse> getMyUserInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        return ResponseEntity.ok(userService.getMyUserInfo(customUserDetails.getId()));
+    }
+
+    /*@GetMapping("/user/{username}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public ResponseEntity<CommonUserResponse> getUserInfo(@PathVariable String username) {
+        return ResponseEntity.ok(userService.getUserWithAuthorities(username));
+    }*/
 }

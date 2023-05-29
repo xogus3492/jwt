@@ -41,8 +41,6 @@ public class AuthService {
 
         String jwt = tokenProvider.createAccessToken(authentication);
 
-        log.error("확인2 : " + jwt);
-
         return LoginResponse.of(jwt);
     }
 }

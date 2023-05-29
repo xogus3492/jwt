@@ -19,7 +19,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException{
+    public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
         CustomUserDetails customUserDetails = CustomUserDetails.of(
                 userRepository.findByEmail(email)
                         .orElseThrow(() -> new UsernameNotFoundException(email + " -> 데이터베이스에서 찾을 수 없습니다."))
