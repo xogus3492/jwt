@@ -1,6 +1,7 @@
 package com.example.jwt.domain.user.domain;
 
 import com.example.jwt.global.common.BaseTimeEntity;
+import com.example.jwt.global.security.CustomUserDetails;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,4 +39,6 @@ public class User extends BaseTimeEntity {
         this.name = name;
         this.roleType = roleType;
     }
+
+
 }

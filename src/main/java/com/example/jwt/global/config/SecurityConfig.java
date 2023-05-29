@@ -5,6 +5,7 @@ import com.example.jwt.global.jwt.JwtAuthenticationEntryPoint;
 import com.example.jwt.global.jwt.TokenProvider;
 import com.example.jwt.global.jwt.util.JwtSecurityConfig;
 import com.example.jwt.global.security.CustomAuthenticationProvider;
+import com.example.jwt.global.security.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -22,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final TokenProvider tokenProvider;
     private final String AUTH_WHITELIST = "/**/public/**";
+    private final CustomUserDetailsService customUserDetailsService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -30,7 +32,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        return new CustomAuthenticationProvider();
+        return new CustomAuthenticationProvider(customUserDetailsService, passwordEncoder());
     }
 
     @Override

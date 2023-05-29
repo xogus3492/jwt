@@ -1,7 +1,9 @@
 package com.example.jwt.global.security;
 
 import com.example.jwt.domain.user.domain.RoleType;
+import com.example.jwt.domain.user.domain.User;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -11,7 +13,6 @@ import java.util.Collection;
 import java.util.Collections;
 
 @NoArgsConstructor
-@AllArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
     private Long id;
@@ -56,5 +57,22 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Builder
+    public CustomUserDetails(Long id, String email, String password, RoleType roleType) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.roleType = roleType;
+    }
+
+    public static CustomUserDetails of(User user) {
+        return CustomUserDetails.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .roleType(user.getRoleType())
+                .build();
     }
 }

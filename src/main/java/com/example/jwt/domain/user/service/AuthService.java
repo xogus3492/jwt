@@ -28,14 +28,8 @@ public class AuthService {
     private final UserRepository userRepository;
 
     public LoginResponse login(LoginRequest request) {
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new EntityNotFoundException());
-
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(
-                        new CustomUserDetails(user.getId(), user.getEmail(), user.getPassword(), user.getRoleType())
-                        , request.getPassword());
-
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         // autenticationManagerBuilder.getObject() => AuthenticationManager 리턴
