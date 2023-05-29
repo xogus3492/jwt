@@ -1,6 +1,6 @@
 package com.example.jwt.domain.user.domain;
 
-public enum RoleType {
+public enum RoleType{
 
     ADMIN, USER;
 

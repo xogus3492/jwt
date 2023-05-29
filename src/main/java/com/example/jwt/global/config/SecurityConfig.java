@@ -4,8 +4,10 @@ import com.example.jwt.global.jwt.JwtAccessDeniedHandler;
 import com.example.jwt.global.jwt.JwtAuthenticationEntryPoint;
 import com.example.jwt.global.jwt.TokenProvider;
 import com.example.jwt.global.jwt.util.JwtSecurityConfig;
+import com.example.jwt.global.security.CustomAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -24,6 +26,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        return new CustomAuthenticationProvider();
     }
 
     @Override
