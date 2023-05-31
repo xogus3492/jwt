@@ -1,6 +1,7 @@
 package com.example.jwt.global.jwt;
 
 import com.example.jwt.domain.user.dto.LoginResponse;
+import com.example.jwt.domain.user.dto.ReissueResponse;
 import com.example.jwt.global.common.RedisDao;
 import com.example.jwt.global.security.CustomUserDetailsService;
 import io.jsonwebtoken.*;
@@ -54,12 +55,15 @@ public class TokenProvider implements InitializingBean {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public LoginResponse provideToken(Authentication authentication) {
-        String atk = createToken(authentication, this.accessTokenValidityInMilliseconds);
+    public String provideAccessToken(Authentication authentication) {
+        return createToken(authentication, this.accessTokenValidityInMilliseconds);
+    }
+
+    public String provideRefreshToken(Authentication authentication) {
         String rtk = createToken(authentication, this.refreshTokenValidityInMillisecond);
 
         redisDao.setValues(authentication.getName(), rtk, Duration.ofMillis(this.refreshTokenValidityInMillisecond));
-        return LoginResponse.of(atk, rtk);
+        return rtk;
     }
 
     private String createToken(Authentication authentication, long validity) {

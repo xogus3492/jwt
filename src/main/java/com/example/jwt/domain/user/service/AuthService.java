@@ -1,30 +1,28 @@
 package com.example.jwt.domain.user.service;
 
-import com.example.jwt.domain.user.domain.User;
-import com.example.jwt.domain.user.domain.repository.UserRepository;
 import com.example.jwt.domain.user.dto.LoginRequest;
 import com.example.jwt.domain.user.dto.LoginResponse;
+import com.example.jwt.domain.user.dto.ReissueResponse;
+import com.example.jwt.global.common.RedisDao;
 import com.example.jwt.global.jwt.TokenProvider;
-import com.example.jwt.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
+import java.util.Objects;
 
-@Slf4j
+
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class AuthService {
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final RedisDao redisDao;
 
     public LoginResponse login(LoginRequest request) {
         UsernamePasswordAuthenticationToken authenticationToken =
@@ -38,8 +36,22 @@ public class AuthService {
         // 인증 결과에 따라 Authentication 객체 리턴
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        LoginResponse response = tokenProvider.provideToken(authentication);
+        String atk = tokenProvider.provideAccessToken(authentication);
+        String rtk = tokenProvider.provideRefreshToken(authentication);
 
-        return response;
+        return LoginResponse.of(atk, rtk);
+    }
+
+    public ReissueResponse reissue(String username) {
+        String rtk = redisDao.getValues(username);
+
+        if (!tokenProvider.validateToken(rtk)) {
+            throw new RuntimeException("잘못된 JWT 서명입니다.");
+        }
+
+        Authentication authentication = tokenProvider.getAuthentication(rtk);
+        String atk = tokenProvider.provideAccessToken(authentication);
+
+        return ReissueResponse.of(atk);
     }
 }
