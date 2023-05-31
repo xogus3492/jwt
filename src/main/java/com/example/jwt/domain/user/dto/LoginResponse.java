@@ -9,11 +9,13 @@ import lombok.Getter;
 @AllArgsConstructor
 public class LoginResponse {
 
-    private String token;
+    private String accessToken;
+    private String refreshToken;
 
-    public static LoginResponse of(String token) {
+    public static LoginResponse of(String accessToken, String refreshToken) {
         return LoginResponse.builder()
-                .token(token)
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 }

@@ -1,5 +1,7 @@
 package com.example.jwt.global.jwt;
 
+import com.example.jwt.domain.user.dto.LoginResponse;
+import com.example.jwt.global.common.RedisDao;
 import com.example.jwt.global.security.CustomUserDetailsService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -15,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -24,43 +27,53 @@ import java.util.stream.Collectors;
 @Component
 public class TokenProvider implements InitializingBean {
 
-    private static final String AUTHORITIES_KEY = "role";
-    private final long tokenValidityInMilliseconds;
-    //private final long refreshTokenValidityInMillisecond;
+    private static final String AUTHORITIES_KEY = "ROLE";
+    private final long accessTokenValidityInMilliseconds;
+    private final long refreshTokenValidityInMillisecond;
     private final String secret;
     private Key key;
     private final CustomUserDetailsService customUserDetailsService;
+    private final RedisDao redisDao;
 
     public TokenProvider(
             @Value("${jwt.secret}") String secret,
-            @Value("${jwt.accessToken-validity-in-seconds}") long tokenValidityInSeconds,
-            //@Value("${jwt.refreshToken-validity-in-seconds}") long refreshTokenValidityInMillisecond
-            CustomUserDetailsService customUserDetailsService) {
+            @Value("${jwt.accessToken-validity-in-seconds}") long accessTokenValidityInMilliseconds,
+            @Value("${jwt.refreshToken-validity-in-seconds}") long refreshTokenValidityInMillisecond,
+            CustomUserDetailsService customUserDetailsService, RedisDao redisDao
+    ) {
         this.secret = secret;
-        this.tokenValidityInMilliseconds = tokenValidityInSeconds * 1000;
-        //this.refreshTokenValidityInMillisecond = refreshTokenValidityInMillisecond * 1000;
+        this.accessTokenValidityInMilliseconds = accessTokenValidityInMilliseconds * 1000;
+        this.refreshTokenValidityInMillisecond = refreshTokenValidityInMillisecond * 1000;
         this.customUserDetailsService = customUserDetailsService;
+        this.redisDao = redisDao;
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         this.key = Keys.hmacShaKeyFor(keyBytes);
-    } // InitializingBean 인터페이스 메소드로, 주입 받은 secret 값을 다시 디코딩하여 key 변수에 할당 해 주기 위함 (필수 x)
+    }
 
-    public String createAccessToken(Authentication authentication) {
+    public LoginResponse provideToken(Authentication authentication) {
+        String atk = createToken(authentication, this.accessTokenValidityInMilliseconds);
+        String rtk = createToken(authentication, this.refreshTokenValidityInMillisecond);
+
+        redisDao.setValues(authentication.getName(), rtk, Duration.ofMillis(this.refreshTokenValidityInMillisecond));
+        return LoginResponse.of(atk, rtk);
+    }
+
+    private String createToken(Authentication authentication, long validity) {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(",")); // 권한 정보들
+                .collect(Collectors.joining(","));
 
         long now = (new Date()).getTime();
-        Date validity = new Date(now + this.tokenValidityInMilliseconds);
 
         return Jwts.builder()
                 .claim("email", authentication.getName())
                 .claim(AUTHORITIES_KEY, authorities)
                 .signWith(key, SignatureAlgorithm.HS512)
-                .setExpiration(validity)
+                .setExpiration(new Date(now + validity))
                 .compact();
     }
 
@@ -77,9 +90,9 @@ public class TokenProvider implements InitializingBean {
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
-        UserDetails principal = customUserDetailsService.loadUserByUsername((String) claims.get("email"));
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername((String) claims.get("email"));
 
-        return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+        return new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), authorities);
     }
 
     public boolean validateToken(String token) {

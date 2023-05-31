@@ -2,7 +2,6 @@ package com.example.jwt.global.security;
 
 import com.example.jwt.domain.user.domain.RoleType;
 import com.example.jwt.domain.user.domain.User;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

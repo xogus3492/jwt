@@ -25,7 +25,6 @@ import javax.persistence.EntityNotFoundException;
 public class AuthService {
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final UserRepository userRepository;
 
     public LoginResponse login(LoginRequest request) {
         UsernamePasswordAuthenticationToken authenticationToken =
@@ -39,8 +38,8 @@ public class AuthService {
         // 인증 결과에 따라 Authentication 객체 리턴
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String jwt = tokenProvider.createAccessToken(authentication);
+        LoginResponse response = tokenProvider.provideToken(authentication);
 
-        return LoginResponse.of(jwt);
+        return response;
     }
 }
