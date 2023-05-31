@@ -1,5 +1,6 @@
 package com.example.jwt.global.config;
 
+import com.example.jwt.global.common.RedisDao;
 import com.example.jwt.global.jwt.JwtAccessDeniedHandler;
 import com.example.jwt.global.jwt.JwtAuthenticationEntryPoint;
 import com.example.jwt.global.jwt.TokenProvider;
@@ -24,6 +25,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final TokenProvider tokenProvider;
     private final String AUTH_WHITELIST = "/**/public/**";
     private final CustomUserDetailsService customUserDetailsService;
+    private final RedisDao redisDao;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -59,7 +61,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
 
                 .and()
-                .apply(new JwtSecurityConfig(tokenProvider));
+                .apply(new JwtSecurityConfig(tokenProvider, redisDao));
 
     }
 }

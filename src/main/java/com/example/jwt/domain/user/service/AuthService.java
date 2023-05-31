@@ -1,8 +1,6 @@
 package com.example.jwt.domain.user.service;
 
-import com.example.jwt.domain.user.dto.LoginRequest;
-import com.example.jwt.domain.user.dto.LoginResponse;
-import com.example.jwt.domain.user.dto.ReissueResponse;
+import com.example.jwt.domain.user.dto.*;
 import com.example.jwt.global.common.RedisDao;
 import com.example.jwt.global.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.Objects;
 
 
@@ -42,8 +41,10 @@ public class AuthService {
         return LoginResponse.of(atk, rtk);
     }
 
-    public ReissueResponse reissue(String username) {
-        String rtk = redisDao.getValues(username);
+    public ReissueResponse reissue(ReissueRequest request) {
+        String email = tokenProvider.getAuthentication(request.getRefreshToken()).getName();
+
+        String rtk = redisDao.getValues(email);
 
         if (!tokenProvider.validateToken(rtk)) {
             throw new RuntimeException("잘못된 JWT 서명입니다.");
@@ -53,5 +54,22 @@ public class AuthService {
         String atk = tokenProvider.provideAccessToken(authentication);
 
         return ReissueResponse.of(atk);
+    }
+
+    public void logout(LogoutRequest request) {
+        String atk = request.getAccessToken();
+
+        if (!tokenProvider.validateToken(atk)) {
+            throw new IllegalArgumentException("잘못된 JWT 서명입니다.");
+        }
+
+        Authentication authentication = tokenProvider.getAuthentication(atk);
+
+        if (redisDao.getValues(authentication.getName()) != null){
+            redisDao.deleteValues(authentication.getName());
+        }
+
+        Long expiration = tokenProvider.getExpiration(atk);
+        redisDao.setValues(atk,"logout", Duration.ofMillis(expiration));
     }
 }

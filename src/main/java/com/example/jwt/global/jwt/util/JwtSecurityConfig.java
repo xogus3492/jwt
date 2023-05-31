@@ -1,5 +1,6 @@
 package com.example.jwt.global.jwt.util;
 
+import com.example.jwt.global.common.RedisDao;
 import com.example.jwt.global.jwt.JwtFilter;
 import com.example.jwt.global.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -11,11 +12,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class JwtSecurityConfig extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
     private final TokenProvider jwtTokenProvider;
+    private final RedisDao redisDao;
 
     @Override
     public void configure(HttpSecurity http) {
 
-        http.addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtFilter(jwtTokenProvider, redisDao), UsernamePasswordAuthenticationFilter.class);
 
     }
 }
