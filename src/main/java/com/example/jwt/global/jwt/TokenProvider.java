@@ -26,7 +26,6 @@ public class TokenProvider implements InitializingBean {
 
     private static final String AUTHORITIES_KEY = "role";
     private final long tokenValidityInMilliseconds;
-    //private final long refreshTokenValidityInMillisecond;
     private final String secret;
     private Key key;
     private final CustomUserDetailsService customUserDetailsService;
@@ -34,11 +33,9 @@ public class TokenProvider implements InitializingBean {
     public TokenProvider(
             @Value("${jwt.secret}") String secret,
             @Value("${jwt.accessToken-validity-in-seconds}") long tokenValidityInSeconds,
-            //@Value("${jwt.refreshToken-validity-in-seconds}") long refreshTokenValidityInMillisecond
             CustomUserDetailsService customUserDetailsService) {
         this.secret = secret;
         this.tokenValidityInMilliseconds = tokenValidityInSeconds * 1000;
-        //this.refreshTokenValidityInMillisecond = refreshTokenValidityInMillisecond * 1000;
         this.customUserDetailsService = customUserDetailsService;
     }
 
@@ -46,12 +43,12 @@ public class TokenProvider implements InitializingBean {
     public void afterPropertiesSet() throws Exception {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         this.key = Keys.hmacShaKeyFor(keyBytes);
-    } // InitializingBean 인터페이스 메소드로, 주입 받은 secret 값을 다시 디코딩하여 key 변수에 할당 해 주기 위함 (필수 x)
+    }
 
     public String createAccessToken(Authentication authentication) {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(",")); // 권한 정보들
+                .collect(Collectors.joining(","));
 
         long now = (new Date()).getTime();
         Date validity = new Date(now + this.tokenValidityInMilliseconds);

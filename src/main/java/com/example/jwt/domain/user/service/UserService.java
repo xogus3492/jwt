@@ -6,7 +6,6 @@ import com.example.jwt.domain.user.dto.CommonUserResponse;
 import com.example.jwt.domain.user.dto.SignupRequest;
 import com.example.jwt.domain.user.dto.SignupResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +23,7 @@ public class UserService {
     public SignupResponse signup(SignupRequest request) {
         User user = userRepository.save(request.toEntity(passwordEncoder.encode(request.getPassword())));
 
-        return new SignupResponse(user.getId());
+        return SignupResponse.of(user);
     }
 
     public CommonUserResponse readMyUserInfo(Long id) {
