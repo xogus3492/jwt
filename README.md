@@ -46,3 +46,5 @@ Back-end
 4. 리턴 받은 '인증 객체'를 SecurityContext에 setAuthentication() 메소드의 인자로 담아 호출하여 저장한다.
 
 5. controller로 넘어와 @PreAuthorize에 설정된 권한과 일치하는지 검증받고 @AuthenticationPrincipal을 CustomUserDetails 객체로 받아와 결과적으로 현재 로그인한 유저에 대한 작업이 이루어지게 된다.
+
+[블로그 링크](https://velog.io/@xogus3492/Spring-Security-JWT%EC%9D%84-%EC%9D%B4%EC%9A%A9%ED%95%9C-%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EA%B5%AC%ED%98%84)
